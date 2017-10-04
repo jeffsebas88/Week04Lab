@@ -10,36 +10,53 @@ import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 
-
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import javax.websocket.Session;
 import services.userservices;
 
 /**
  *
  * @author 643507
  */
-
 public class LoginServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-                   Cookie[] cookies = request.getCookies();
-                   String cookieName = "userIdCookie";
-                   String cookieValue = "";
-                   for (Cookie cookie: cookies) {
-                       if(cookieName.equals(cookie.getName()))
-                           cookieValue=cookie.getValue();
-                       
-                   }
-       
-            if (!cookieValue.equals("")) {
-                request.setAttribute("username", cookieValue);
-                request.setAttribute("checked", "checked");
+         HttpSession sess = request.getSession();
+      
+        Cookie[] cookies = request.getCookies();
+        String cookieName = "userIdCookie";
+        String cookieValue = "";
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookieName.equals(cookie.getName())) {
+                    cookieValue = cookie.getValue();
+                }
+
             }
-            
+        }
+        if (!cookieValue.equals("")) {
+            request.setAttribute("username", cookieValue);
+            request.setAttribute("checked", "checked");
+        }
+        String action = request.getParameter("action");
+        if (action != null && action.equals("logout")) {
+            sess.removeAttribute("username");
+            // request.removeAttribute("action");
+            request.setAttribute("errorMessage", "Sucessfuly logout");
+            getServletContext().getRequestDispatcher("/WEB-INF/login.jsp").forward(request, response);
+            return;
+        }
+
+        String sessUser = (String) sess.getAttribute("username");
+        if (sessUser != null) {
+            response.sendRedirect("/home");
+            return;
+}
 
         getServletContext().getRequestDispatcher("/WEB-INF/login.jsp").forward(request, response);
     }
@@ -57,7 +74,7 @@ public class LoginServlet extends HttpServlet {
                     forward(request, response);
             return;
         }
-   
+
         userservices userservices = new userservices();
         userservices.setUsername(username);
         userservices.setPassword(password);
@@ -89,17 +106,14 @@ public class LoginServlet extends HttpServlet {
                 c.setPath("/"); //allow the download application to access it
                 response.addCookie(c);
             }
-           response.sendRedirect("home");
-           
-        }
-         String logout = request.getParameter("logout");
-        
-        if (logout!= null) 
-        {
-            request.setAttribute("errormessage", "Logged out!");
-            getServletContext().getRequestDispatcher("/WEB-INF/login.jsp").forward(request, response);
+             HttpSession sess = request.getSession();
+        sess.setAttribute("username", username);
+    response.sendRedirect("/home");
             
-            
+
         }
+       
+                
+        }
+     
     }
-}

@@ -17,7 +17,7 @@ http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd">
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>LoginServlet</servlet-name>
-        <url-pattern>/logout</url-pattern>
+        <url-pattern>/login</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>MainPageServlet</servlet-name>
@@ -29,6 +29,6 @@ http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd">
         </session-timeout>
     </session-config>
     <welcome-file-list>
-        <welcome-file>LoginServlet</welcome-file>
+        <welcome-file>login</welcome-file>
     </welcome-file-list>
 </web-app>
